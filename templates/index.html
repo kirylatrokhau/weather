@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather</title>
+</head>
+<body>
+    <h1>Weather Info</h1>
+    <div id="cities"></div>
+    <button onclick="updateWeather()">Update</button>
+    <hr>
+
+    <!-- Add New City -->
+    <h3>Add City</h3>
+    <form id="addCityForm" onsubmit="addCity(event)">
+        <label for="name">Country:</label>
+        <input type="text" id="country" required>
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+        <label for="latitude">Latitude:</label>
+        <input type="number" id="latitude" step="any" required>
+        <label for="longitude">Longitude:</label>
+        <input type="number" id="longitude" step="any" required>
+        <button type="submit">Add City</button>
+    </form>
+
+    <!-- Remove City -->
+    <h3>Remove City</h3>
+    <form id="removeCityForm" onsubmit="removeCity(event)">
+        <label for="removeName">City Name:</label>
+        <input type="text" id="removeName" required>
+        <button type="submit">Remove City</button>
+    </form>
+
+    <!-- Reset Cities -->
+    <button onclick="resetCities()">Reset to Default</button>
+
+    <script>
+        async function updateWeather() {
+            const response = await fetch('/weather/update');
+            const cities = await response.json();
+            const container = document.getElementById('cities');
+            container.innerHTML = '';
+            cities.forEach(city => {
+                container.innerHTML += `<p>${city.name} (${city.country}): ${city.weather}°C</p>`;
+            });
+        }
+
+        async function addCity(event) {
+            event.preventDefault();
+            const country = document.getElementById('country').value;
+            const name = document.getElementById('name').value;
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
+            
+            const response = await fetch('/cities/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ country, name, latitude: parseFloat(latitude), longitude: parseFloat(longitude) })
+            });
+
+            if (response.ok) {
+                alert('City added successfully.');
+                updateWeather();
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.detail}`);
+            }
+        }
+
+        async function removeCity(event) {
+            event.preventDefault();
+            const name = document.getElementById('removeName').value;
+            
+            const response = await fetch('/cities/remove', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+
+            if (response.ok) {
+                alert('City removed successfully.');
+                updateWeather();
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.detail}`);
+            }
+        }
+
+        async function resetCities() {
+            const response = await fetch('/cities/reset', { method: 'POST' });
+            if (response.ok) {
+                alert('Cities reset to default.');
+                updateWeather();
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.detail}`);
+            }
+        }
+    </script>
+</body>
+</html>
