@@ -28,16 +28,6 @@ def load_cities():
             })
     return cities
 
-# async def fetch_weather(session, city):
-#     url = WEATHER_API_URL.format(latitude=city['latitude'], longitude=city['longitude'])
-#     url = f'https://api.open-meteo.com/v1/forecast?latitude={city['latitude']}&longitude={city['longitude']}&current_weather=true'
-#     try:
-#         async with session.get(url) as response:
-#             result = await response.json()
-#             city['weather'] = result['current_weather']['temperature']
-#     except Exception as e:
-#         city['weather'] = 'Error'
-
 # Initialize cities list
 load_cities()
 
@@ -58,7 +48,7 @@ async def read_root(request: Request):
 @app.get('/weather/update')
 async def update_weather():
     async def fetch_weather(city):
-        url = f'https://api.open-meteo.com/v1/forecast?latitude={city['latitude']}&longitude={city['longitude']}&current_weather=true'
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={city['latitude']}&longitude={city['longitude']}&current_weather=true"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 data = await response.json()
