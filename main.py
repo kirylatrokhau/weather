@@ -28,15 +28,15 @@ def load_cities():
             })
     return cities
 
-async def fetch_weather(session, city):
-    url = WEATHER_API_URL.format(latitude=city['latitude'], longitude=city['longitude'])
-    url = f'https://api.open-meteo.com/v1/forecast?latitude={city['latitude']}&longitude={city['longitude']}&current_weather=true'
-    try:
-        async with session.get(url) as response:
-            result = await response.json()
-            city['weather'] = result['current_weather']['temperature']
-    except Exception as e:
-        city['weather'] = 'Error'
+# async def fetch_weather(session, city):
+#     url = WEATHER_API_URL.format(latitude=city['latitude'], longitude=city['longitude'])
+#     url = f'https://api.open-meteo.com/v1/forecast?latitude={city['latitude']}&longitude={city['longitude']}&current_weather=true'
+#     try:
+#         async with session.get(url) as response:
+#             result = await response.json()
+#             city['weather'] = result['current_weather']['temperature']
+#     except Exception as e:
+#         city['weather'] = 'Error'
 
 # Initialize cities list
 load_cities()
